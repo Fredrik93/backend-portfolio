@@ -3,12 +3,12 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const todoRoutes = express.Router();
+const userRoutes = express.Router();
 const PORT = 4000;
 require('dotenv').config()
-var url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vojuh.mongodb.net/users?retryWrites=true&w=majority`;
+var url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vojuh.mongodb.net/<dbname>?retryWrites=true&w=majority`;
 
-let Todo = require('./user.model');
+let User = require('./user.model');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -20,25 +20,25 @@ connection.once('open', function () {
     console.log("MongoDB database connection established successfully");
 })
 
-todoRoutes.route('/').get(function (req, res) {
-    Todo.find(function (err, todos) {
+userRoutes.route('/').get(function (req, res) {
+    User.find(function (err, users) {
         if (err) {
             console.log(err);
         } else {
-            res.json(todos);
+            res.json(users);
         }
     });
 });
 
-todoRoutes.route('/:id').get(function (req, res) {
+userRoutes.route('/:id').get(function (req, res) {
     let id = req.params.id;
-    Todo.findById(id, function (err, todo) {
-        res.json(todo);
+    User.findById(id, function (err, user) {
+        res.json(user);
     });
 });
 
-todoRoutes.route('/update/:id').post(function (req, res) {
-    Todo.findById(req.params.id, function (err, todo) {
+userRoutes.route('/update/:id').post(function (req, res) {
+    User.findById(req.params.id, function (err, todo) {
         if (!todo)
             res.status(404).send("data is not found");
         else
@@ -56,8 +56,8 @@ todoRoutes.route('/update/:id').post(function (req, res) {
     });
 });
 
-todoRoutes.route('/add').post(function (req, res) {
-    let todo = new Todo(req.body);
+userRoutes.route('/add').post(function (req, res) {
+    let todo = new User(req.body);
     todo.save()
         .then(todo => {
             res.status(200).json({ 'todo': 'todo added successfully' });
@@ -67,7 +67,7 @@ todoRoutes.route('/add').post(function (req, res) {
         });
 });
 
-app.use('/todos', todoRoutes);
+app.use('/todos', userRoutes);
 
 app.listen(PORT, function () {
     console.log("Server is running on Port: " + PORT);
