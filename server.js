@@ -49,9 +49,9 @@ userRoutes.route('/:id').get(function (req, res) {
 //create new entry
 userRoutes.route('/add').post(function (req, res) {
     var myData = new testUser(req.body);
-    myData.firstName = 'lola'
     myData.save()
         .then(item => {
+            console.log(req.body)
             res.send(myData.firstName + "item saved to database");
         })
         .catch(err => {
