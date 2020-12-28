@@ -37,6 +37,22 @@ userRoutes.route('/:id').get(function (req, res) {
     });
 });
 
+// Update the XP of specific user 
+userRoutes.route('/updatexp/:id').patch(function (req, res) {
+    User.findById(req.params.id, function (err, user) {
+        if (!user)
+            res.status(404).send("data is not found");
+        else
+            user.experience = req.body.experience;
+        user.save().then(user => {
+            res.json('User updated!');
+        })
+            .catch(err => {
+                res.status(400).send("Update not possible");
+            });
+    });
+});
+//Update an entire user
 userRoutes.route('/update/:id').post(function (req, res) {
     User.findById(req.params.id, function (err, user) {
         if (!user)
@@ -45,10 +61,6 @@ userRoutes.route('/update/:id').post(function (req, res) {
             user.name = req.body.name;
         user.lastname = req.body.lastname;
         user.experience = req.body.experience;
-        // todo.todo_description = req.body.todo_description;
-        // todo.todo_responsible = req.body.todo_responsible;
-        // todo.todo_priority = req.body.todo_priority;
-        // todo.todo_completed = req.body.todo_completed;
         user.save().then(user => {
             res.json('User updated!');
         })
