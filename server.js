@@ -1,106 +1,74 @@
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const mongoose = require('mongoose')
-const PORT = 4000
-var MongoClient = require('mongodb').MongoClient;
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const todoRoutes = express.Router();
+const PORT = 4000;
 require('dotenv').config()
-const userRoutes = express.Router()
-let User = require('./user.model')
-app.use('/users', userRoutes)
+var url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vojuh.mongodb.net/users?retryWrites=true&w=majority`;
 
-app.use(cors())
-app.use(bodyParser.json())
+let Todo = require('./user.model');
 
-var url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vojuh.mongodb.net/<dbname>?retryWrites=true&w=majority`;
+app.use(cors());
+app.use(bodyParser.json());
 
-var nameSchema = new mongoose.Schema({
-    firstName: String,
-    lastName: String
-});
-var testUser = mongoose.model("testUser", nameSchema);
-
-
-
-mongoose.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-//list of all users 
-userRoutes.route('/').get(function (req, res) {
-    testUser.find(function (err, users) {
-        if (err) {
-            console.log(err)
-        } else {
-            res.json(users)
-        }
-    })
-})
-
-//retrieve a specific user 
-userRoutes.route('/:id').get(function (req, res) {
-    let id = req.params.id;
-    User.findById(id, function (err, user) {
-        res.json(user)
-    })
-})
-
-//create new entry
-userRoutes.route('/add').post(function (req, res) {
-    var myData = new testUser(req.body);
-    myData.save()
-        .then(item => {
-            console.log(req.body)
-            res.send(myData.firstName + "item saved to database");
-        })
-        .catch(err => {
-            res.status(400).send("unable to save to database");
-        });
-})
-//update user 
-userRoutes.route('/update/:id').post(function (req, res) {
-    User.findById(req.params.id, function (err, user) {
-        if (!user) {
-            res.status(404).send('Data not found')
-        } else {
-            user.name = req.body.name
-            user.lastname = req.body.lastname
-            user.experience = req.body.experience
-            user.save().then(user => {
-                res.json('User updated')
-            })
-                .catch(err => {
-                    res.status(400).send('Update not possible')
-                })
-        }
-    })
-})
-
-//update entry 
-function update(experience) {
-    MongoClient.connect(url, function (err, db) {
-        if (err) throw err;
-        var dbo = db.db("mydb");
-        var myquery = { lastname: "Ullman" };
-        var newvalues = { $set: { location: "Canyon 123", xp: experience } };
-        dbo.collection("customers").updateOne(myquery, newvalues, function (err, res) {
-            if (err) throw err;
-            console.log("1 document updated");
-            db.close();
-        });
-    });
-}
-
-
-const connection = mongoose.connection
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+const connection = mongoose.connection;
 
 connection.once('open', function () {
-    console.log("mongodb db connection established")
+    console.log("MongoDB database connection established successfully");
 })
 
-//update(26)
+todoRoutes.route('/').get(function (req, res) {
+    Todo.find(function (err, todos) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.json(todos);
+        }
+    });
+});
+
+todoRoutes.route('/:id').get(function (req, res) {
+    let id = req.params.id;
+    Todo.findById(id, function (err, todo) {
+        res.json(todo);
+    });
+});
+
+todoRoutes.route('/update/:id').post(function (req, res) {
+    Todo.findById(req.params.id, function (err, todo) {
+        if (!todo)
+            res.status(404).send("data is not found");
+        else
+            todo.todo_description = req.body.todo_description;
+        todo.todo_responsible = req.body.todo_responsible;
+        todo.todo_priority = req.body.todo_priority;
+        todo.todo_completed = req.body.todo_completed;
+
+        todo.save().then(todo => {
+            res.json('Todo updated!');
+        })
+            .catch(err => {
+                res.status(400).send("Update not possible");
+            });
+    });
+});
+
+todoRoutes.route('/add').post(function (req, res) {
+    let todo = new Todo(req.body);
+    todo.save()
+        .then(todo => {
+            res.status(200).json({ 'todo': 'todo added successfully' });
+        })
+        .catch(err => {
+            res.status(400).send('adding new todo failed');
+        });
+});
+
+app.use('/todos', todoRoutes);
 
 app.listen(PORT, function () {
-    console.log("Server is running on port 4000")
-})
+    console.log("Server is running on Port: " + PORT);
+});
