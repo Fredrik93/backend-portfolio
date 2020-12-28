@@ -15,13 +15,21 @@ app.use(bodyParser.json())
 
 var url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vojuh.mongodb.net/<dbname>?retryWrites=true&w=majority`;
 
+var nameSchema = new mongoose.Schema({
+    firstName: String,
+    lastName: String
+});
+var testUser = mongoose.model("testUser", nameSchema);
+
+
+
 mongoose.connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
 //list of all users 
 userRoutes.route('/').get(function (req, res) {
-    User.find(function (err, users) {
+    testUser.find(function (err, users) {
         if (err) {
             console.log(err)
         } else {
@@ -40,15 +48,15 @@ userRoutes.route('/:id').get(function (req, res) {
 
 //create new entry
 userRoutes.route('/add').post(function (req, res) {
-    let user = new User(req.body)
-
-    user.save()
-        .then(user => {
-            res.status(200).json({ 'user': 'user added successfully' })
+    var myData = new testUser(req.body);
+    myData.firstName = 'lola'
+    myData.save()
+        .then(item => {
+            res.send(myData.firstName + "item saved to database");
         })
         .catch(err => {
-            res.status(400).send('Adding new user failed')
-        })
+            res.status(400).send("unable to save to database");
+        });
 })
 //update user 
 userRoutes.route('/update/:id').post(function (req, res) {
