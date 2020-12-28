@@ -43,8 +43,12 @@ userRoutes.route('/update/:id').post(function (req, res) {
             res.status(404).send("data is not found");
         else
             user.name = req.body.name;
-        user.lastname = req.body.lastname
-        user.experience = req.body.experience
+        user.lastname = req.body.lastname;
+        user.experience = req.body.experience;
+        // todo.todo_description = req.body.todo_description;
+        // todo.todo_responsible = req.body.todo_responsible;
+        // todo.todo_priority = req.body.todo_priority;
+        // todo.todo_completed = req.body.todo_completed;
         user.save().then(user => {
             res.json('User updated!');
         })
