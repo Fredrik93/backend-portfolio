@@ -45,7 +45,7 @@ userRoutes.route('/updatexp/:id').patch(function (req, res) {
         else
             user.experience = req.body.experience;
         user.save().then(user => {
-            res.json('User updated!');
+            res.json('User experience updated!');
         })
             .catch(err => {
                 res.status(400).send("Update not possible");
