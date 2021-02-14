@@ -37,7 +37,7 @@ userRoutes.route('/:id').get(function (req, res) {
     });
 });
 
-// Update the XP of specific user 
+// Update the experience of specific user 
 userRoutes.route('/updatexp/:id').patch(function (req, res) {
     User.findById(req.params.id, function (err, user) {
         if (!user)
