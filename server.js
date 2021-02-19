@@ -48,7 +48,7 @@ userRoutes.route('/updatexp/:id').patch(function (req, res) {
             res.json('User experience updated!');
         })
             .catch(err => {
-                res.status(400).send("Update impossible at the moment");
+                res.status(400).send("Update  not possible at the moment");
             });
     });
 });
