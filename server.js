@@ -6,8 +6,8 @@ const mongoose = require('mongoose');
 const userRoutes = express.Router();
 const PORT = 4000;
 require('dotenv').config()
-var url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vojuh.mongodb.net/Timerdb?retryWrites=true&w=majority`;
-
+//var url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vojuh.mongodb.net/Timerdb?retryWrites=true&w=majority`;
+var url = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@pomodoro.n1jo7.mongodb.net/test?retryWrites=true&w=majority`
 let User = require('./user.model');
 
 app.use(cors());
